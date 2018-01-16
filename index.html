@@ -1,0 +1,177 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    
+    <title>Moving Motivators</title>
+    <meta name="description" content="Moving Motivators">
+    <meta name="author" content="Seth A. Roby • @TALlama">
+  
+    <style type="text/css" media="screen">
+      html {
+        font-family: 'Futura';
+      }
+      
+      .hidden { display: none !important; }
+      
+      h1 {
+        font-variant: small-caps;
+        letter-spacing: 0.5em;
+      }
+      h1 .vs {
+        display: none;
+        color: red;
+        position: absolute;
+        top: 1.5em;
+        left: 10em;
+      }
+      .with-focus h1 .team-name {
+        opacity: 0.5;
+      }
+      .with-focus h1 .vs {
+        display: inline;
+      }
+      
+      
+      #grid path {
+        stroke: #ccc;
+        stroke-linecap: square;
+      }
+      #vertical-grid path {
+        stroke-width: 3;
+      }
+      
+      #team-average-line {
+        fill: none;
+        stroke: #000000;
+        stroke-dasharray: 2, 5;
+      }
+      #team-standard-deviation {
+        fill: #000000;
+        fill-opacity: 0.06;
+      }
+      
+      .order-line {
+        fill: none;
+        stroke: #000000;
+        stroke-width: 5;
+        stroke-linejoin: round;
+        stroke-dasharray: 20, 10;
+      }
+      #team-order-line {
+        stroke: #00000044;
+      }
+      
+      #member-icons {
+        opacity: 0.5;
+      }
+      
+      .motivator-icon {
+        transform-box: border-box;
+      }
+      
+      .motivator-diff {
+        fill: none;
+        stroke: #000000;
+        stroke-opacity: 0.6;
+      }
+      
+      .dot:hover, .team-average:hover {
+        stroke-width: 5;
+      }
+      
+      button.focus-on-member, button.baseline-on-member {
+        padding: 1em;
+        background: white;
+        border: 1px solid #999;
+        min-width: 11em;
+      }
+      button.active {
+        background: #e5fdff;
+      }
+      button.focus-on-member:hover, button.baseline-on-member:hover {
+        background: #eee;
+      }
+    </style>
+  
+    <!--[if lt IE 9]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body>
+    <h1>
+      <span class='team-name'></span>
+      <span class='vs'>vs <span class='focused-member'></span></span>
+      Moving Motivators
+    </h1>
+    
+    <div id='graph' style='height: 700px'>
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id='grid-area'>
+            <rect x='50' y='50' width='900' height='450'>
+          </clipPath>
+        </defs>
+        
+        <symbol id="starburst" viewBox="0 0 100 100">
+          <path d="M 50 10 L 90 66 L 10 66 z"></path>
+          <path d="M 50 90 L 90 33 L 10 33 z"></path>
+        </symbol>
+        
+        <g id='grid'>
+          <g id='vertical-grid'>
+            <path d="M   50  50 v 450"></path>
+            <path d="M  150  50 v 450"></path>
+            <path d="M  250  50 v 450"></path>
+            <path d="M  350  50 v 450"></path>
+            <path d="M  450  50 v 450"></path>
+            <path d="M  550  50 v 450"></path>
+            <path d="M  650  50 v 450"></path>
+            <path d="M  750  50 v 450"></path>
+            <path d="M  850  50 v 450"></path>
+            <path d="M  950  50 v 450"></path>
+          </g>
+          <g id='horizontal-grid'>
+            <path d="M   50  50 h 900"></path>
+            <path d="M   50 100 h 900"></path>
+            <path d="M   50 150 h 900"></path>
+            <path d="M   50 200 h 900"></path>
+            <path d="M   50 250 h 900"></path>
+            <path d="M   50 300 h 900"></path>
+            <path d="M   50 350 h 900"></path>
+            <path d="M   50 400 h 900"></path>
+            <path d="M   50 450 h 900"></path>
+            <path d="M   50 500 h 900"></path>
+          </g>
+        </g>
+        <g id='team'>
+          <polygon id='team-standard-deviation' clip-path='url(#grid-area)'>
+            <title>This gray area is the standard deviation from the team mean</title>
+          </polygon>
+          <polyline id='team-order-line' class='order-line' points="950 500, 50 50" />
+          <g id='team-averages'>
+            <title>The baseline put the motivators in this order</title>
+            <polyline id='team-average-line' />
+            <g id='team-average-stars' />
+          </g>
+        </g>
+        <g id='dots'></g>
+        <g id='focus'>
+          <path id='focus-order-line' class='order-line' clip-path='url(#grid-area)' />
+        </g>
+        <g id='team-icons'></g>
+        <g id='member-icons'></g>
+      </svg>
+      
+      <div class='show'></div>
+      <div class='members'></div>
+      <div class='baselines'></div>
+      <div class='teams'></div>
+    </div>
+    
+    <script src="teams.js"></script>
+    <script src="motivators.js"></script>
+  </body>
+</html>
