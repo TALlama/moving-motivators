@@ -19,7 +19,15 @@ You can go in lots of directions on this, but here are a few I've used.
 
 ### What did you think of this exercise?
 
-This is a good starter. It gets everyone talking. They'll start saying why they put some things where, and what they thought things meant. There will be disagreements. That's okay; talk about them.
+This is a good starter. It gets everyone talking. They'll start saying why they put some things where, and what they thought things meant. There will be disagreements. That's okay; talk about them. If no one speaks up, here's a few other conversation starters.
+
+#### What strategies did you use to place things?
+
+Some people work from the inside out, others from the outside in. Some focus on the one-word title, others on the description, and some on the picture or the color. Some people group the motivators into tiers and then sort within those, while some take them all individually. Some people rank them taking into account the role they play in this team, as distinct from the role they play on other teams or even in their home life, while some think about their motivations more holistically.
+
+#### What made ranking the motivators hard?
+
+A forced sort is always going to present you with some hard choices, and the motivators are a good set because none of them are bad on the face of things. Which ones tripped people up.
 
 ### Here are the rankings with the names shorn off. Who do you think is who?
 
@@ -64,3 +72,13 @@ Did you know you were the only one who was motivated by Acceptance?
 #### Which of these distances is what you expected?
 
 Did the team know you were the only one who was motivated by Acceptance?
+
+### Reflections
+
+#### Team fit
+
+Do the tasks your team takes on reflect the motivations you've identified? When faced with a task that's in tension with those motivations, what do you do? Can you transmute those tasks into something better fitted to your team?
+
+#### Hiring
+
+When looking to bring more people into the team, it's likely that you've subconsciously reinforced these motivations in the past. Would it serve you well to continue doing so, or would mixing your teams' motivations allow your team to grow into new roles?
