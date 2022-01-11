@@ -1,0 +1,432 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    
+    <title>Moving Motivators</title>
+    <meta name="description" content="Moving Motivators">
+    <meta name="author" content="Seth A. Roby • @TALlama">
+  
+    <style type="text/css" media="screen">
+      html {
+        font-family: 'Futura';
+      }
+      
+      .hidden { display: none !important; }
+      
+      h1 {
+        font-variant: small-caps;
+        letter-spacing: 0.5em;
+      }
+      h1 .vs {
+        display: none;
+        color: red;
+        position: absolute;
+        top: 1.5em;
+        left: 10em;
+      }
+      
+      #current-matchup {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 1;
+        padding: 40px 0;
+      }
+      
+      #history {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+      }
+      
+        #history > .matchup {
+          padding: 1rem 2rem;
+          grid-gap: 1rem;
+        }
+      
+          #history > .matchup:nth-child(odd) {
+            background: #ddd;
+          }
+          
+          #history > .matchup.fade {
+            opacity: 0.1;
+          }
+      
+        #history > .matchup .motivator {
+          opacity: 0.5;
+          width: 25px;
+          height: 25px;
+          background-size: 100%;
+          padding: .2rem;
+        }
+        
+          #history > .matchup input:checked + .motivator {
+            opacity: 1;
+          }
+      
+      .matchup {
+        max-width: 50rem;
+        padding: 1rem 2rem;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        grid-gap: 2rem;
+        align-items: center;
+        justify-items: center;
+      }
+      
+        .matchup article {
+          display: flex;
+        }
+      
+        .matchup .motivator {
+          background-color: white;
+          background-repeat: no-repeat;
+          width: 188px;
+          height: 190px;
+          border: 1px solid #aaa;
+          box-shadow: 3px 3px 3px #ccc;
+          transition: .1s;
+        }
+        
+        .matchup input:checked + .motivator,
+        .matchup .motivator:hover {
+          transform: scale(1.3);
+        }
+        
+        .matchup input {
+          overflow: hidden;
+          height: 1px;
+          width: 1px;
+          margin: -1px;
+          clip-path: inset(50%);
+        }
+        
+        .matchup .motivator.acceptance { background-image: url('images/acceptance.png') }
+        .matchup .motivator.curiosity { background-image: url('images/curiosity.png') }
+        .matchup .motivator.freedom { background-image: url('images/freedom.png') }
+        .matchup .motivator.goal { background-image: url('images/goal.png') }
+        .matchup .motivator.honor { background-image: url('images/honor.png') }
+        .matchup .motivator.mastery { background-image: url('images/mastery.png') }
+        .matchup .motivator.order { background-image: url('images/order.png') }
+        .matchup .motivator.power { background-image: url('images/power.png') }
+        .matchup .motivator.relatedness { background-image: url('images/relatedness.png') }
+        .matchup .motivator.status { background-image: url('images/status.png') }
+      
+      #progress {
+        width: 100%;
+      }
+      
+      #scoreboard {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: auto auto;
+        grid-template-columns: repeat(10, 1fr);
+        justify-items: center;
+        font-size: 50%;
+      }
+      
+        #scoreboard dt {
+          color: #ccc;
+        }
+        
+        #scoreboard dd {
+          font-weight: 400;
+          margin: 0;
+        }
+        
+        #scoreboard img {
+          width: calc(90vw / 10);
+          height: 24px;
+          object-fit: cover;
+          object-position: 0% 0%;
+        }
+        
+        #scoreboard.full img {
+          height: initial;
+        }
+        
+        h3 {
+          margin-bottom: 0;
+        }
+        
+        code {
+          font-size: 150%;
+          border: 6px solid red;
+          background: linear-gradient(to right, #ff000033, #ff000011, #ff000033);
+          border-radius: 5px;
+          padding: .25rem .5rem;
+        }
+    </style>
+  
+    <!--[if lt IE 9]>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+    <![endif]-->
+  </head>
+  
+  <body>
+    <h1>
+      Moving Motivators • Ranker
+    </h1>
+    
+    <progress id='progress'></progress>
+    
+    <dt id='scoreboard'>
+    </dt>
+  
+    <main id='current-matchup'>
+    </main>
+    
+    <aside id='history'>
+    </aside>
+    
+    <footer>
+      <a href='/pairwise.html'>Reset</a>
+    </footer>
+  </body>
+  
+  <script>
+    var motivators = 'Acceptance Curiosity Freedom Goal Honor Mastery Order Power Relatedness Status'.split(' ');
+    var motivatorsByCode = {
+      A: 'Acceptance',
+      C: 'Curiosity',
+      F: 'Freedom',
+      G: 'Goal',
+      H: 'Honor',
+      M: 'Mastery',
+      O: 'Order',
+      P: 'Power',
+      R: 'Relatedness',
+      S: 'Status',
+    };
+    
+    Array.prototype.except = function(...values) { return this.filter(v => !values.includes(v)) };
+    Array.prototype.shuffle = function() { return this.sort((l, r) => Math.random() - 0.5) };
+    Array.prototype.combinations = function(rhs) {
+      return this.flatMap((v, i) => this.slice(i+1).map(w => [v, w]));
+    }
+    
+    class Scoreboard {
+      get el() {
+        return document.getElementById('scoreboard');
+      }
+      
+      update(...scores) {
+        let el = this.el;
+        el.innerHTML = ''
+        
+        for (let [m, s] of scores) {
+          let dt = document.createElement('dt');
+          dt.dataset.motivator = m;
+          let img = document.createElement('img');
+          img.src = `images/${m.toLowerCase()}.png`;
+          img.alt = m;
+          dt.append(img);
+          
+          let ddScore = document.createElement('dd');
+          ddScore.append(s);
+          
+          el.append(dt);
+          el.append(ddScore);
+        }
+      }
+    }
+    
+    class Matchup {
+      constructor(a, b) {
+        this.a = a;
+        this.b = b;
+        this.displayOrder = [this.a, this.b].shuffle();
+      }
+      
+      get param() { return [this.a[0], this.b[0]].sort().join(''); }
+      
+      get winner() {
+        return motivatorsByCode[new URL(document.location).searchParams.get(this.param)];
+      }
+      
+      get loser() {
+        return this.winner === undefined ? undefined : (this.winner === this.a ? this.b : this.a);
+      }
+      
+      participant(motivator) {
+        let id = `${this.a}-vs-${this.b}--${motivator}`
+        let el = document.createElement('article');
+        
+        let input = document.createElement('input');
+        input.setAttribute('id', id);
+        input.setAttribute('type', 'radio');
+        input.setAttribute('name', `${this.a}-vs-${this.b}`);
+        input.setAttribute('value', motivator);
+        input.checked = motivator === this.winner;
+        el.append(input);
+        
+        let label = document.createElement('label');
+        label.setAttribute('for', id);
+        label.setAttribute('class', `motivator ${motivator.toLowerCase()}`);
+        el.append(label);
+        
+        return el;
+      }
+      
+      get el() {
+        if (this._el) return this._el;
+        
+        let el = this._el = document.createElement('article');
+        el.classList.add('matchup');
+        el.matchup = this;
+        
+        el.append(this.participant(this.displayOrder[0]));
+        el.append('vs');
+        el.append(this.participant(this.displayOrder[1]));
+        
+        return el;
+      }
+      
+      update() {
+        this._el?.remove();
+        this._el = null;
+      }
+    }
+    
+    class Game {
+      constructor() {
+        this.scoreboard = new Scoreboard();
+        this.scoreboard.update(...this.score);
+        
+        this.matchups = motivators.combinations().map(pair => new Matchup(...pair)).shuffle();
+        this.progress.max = this.matchups.length;
+      }
+      
+      get matchup() { return this._matchup }
+      set matchup(v) {
+        this._matchup = v;
+        
+        let cm = document.getElementById('current-matchup')
+        cm.innerHTML = '';
+        if (v) {
+          cm.append(v.el);
+        } else {
+          this.finish();
+        }
+      }
+      
+      get progress() {
+        return document.getElementById('progress')
+      }
+      
+      get score() {
+        let scores = {};
+        motivators.forEach(m => scores[m] = 0);
+        this.matchups?.
+          filter(m => m.winner)?.
+          forEach(m => scores[m.winner] += 1);
+        return Object.entries(scores).sort((l, r) => {
+          let winner = this.winner(l, r);
+          if (winner && winner === l) { return 1 }
+          if (winner && winner === r) { return -1 }
+          return r[1] - l[1];
+        });
+      }
+      
+      winner(a, b) {
+        return this.matchups?.find(m => (m.a == a && m.b == b) || (m.a == b && m.b == a))?.winner;
+      }
+      
+      start() {
+        this.update();
+      }
+      
+      watch() {
+        let sbEl = this.scoreboard.el;
+        
+        sbEl.querySelectorAll('dt').forEach(dt => {
+          dt.addEventListener('mouseenter', event => this.focus = dt.dataset.motivator);
+          dt.addEventListener('mouseout', event => this.focus = null);
+        });
+      }
+       
+      update() { 
+        this.updateHistory();
+        this.updateScoreboard();
+        this.updateProgress();
+        this.updateCurrentMatch();
+      }
+      
+      updateHistory() {
+        let history = document.getElementById('history');
+        history.innerHTML = '';
+        
+        this.matchups?.forEach(matchup => {
+          if (matchup?.winner || matchup?.winnerFromParam) {
+            history.prepend(matchup.el);
+          }
+        });
+      }
+      
+      updateScoreboard() {
+        this.scoreboard.update(...this.score);
+        this.watch();
+      }
+      
+      updateProgress() {
+        this.progress.value = this.matchups.filter(m => m.winner).length;
+      }
+      
+      updateCurrentMatch() {
+        this.matchup = this.matchups.find(m => !m.winner);
+      }
+      
+      win(matchup, winner) {
+        if (matchup && winner) {
+          let currentUrl = new URL(document.location);
+          currentUrl.searchParams.set(matchup.param, winner[0]);
+          history.pushState({}, null, currentUrl);
+        }
+        
+        this.update();
+      }
+      
+      finish() {
+        document.getElementById('scoreboard').classList.add('full');
+        document.getElementById('current-matchup').innerHTML = `
+          <h3>Done!</h3>
+          <p>You can <a href='${document.location}'>bookmark this page</a> to revisit your answers at any time.</p>
+          <p>If you're doing the team activity, copy/paste this string and send it to the activity coordinator:</p>
+          <code><pre>${this.score.map(([m,s]) => m).join(' ').toLowerCase()}</pre></code>
+        `;
+      }
+      
+      set focus(motivator) {
+        document.querySelectorAll('#history .matchup').forEach(mEl => {
+          if (motivator && mEl.matchup) {
+            mEl.classList.toggle('fade', mEl.matchup.a !== motivator && mEl.matchup.b !== motivator);
+          } else {
+            mEl.classList.remove('fade');
+          }
+        })
+      }
+    }
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      let game = new Game();
+      game.start();
+      
+      window.addEventListener('change', event => {
+        let matchupEl = event.target.closest('.matchup');
+        let match = matchupEl.matchup;
+        
+        game.win(match, event.target.value);
+      });
+      
+      window.addEventListener("popstate", event => {
+        let mostRecent = game.matchups.find(m => m.winner);
+        
+        game.matchups.forEach(m => m.update());
+        game.matchup = mostRecent;
+        
+        game.update();
+      });
+    });
+  </script>
+</html>
