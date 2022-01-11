@@ -337,13 +337,15 @@ class MotivatorIcon extends GraphElement {
   }
 }
 
-var teamName = decodeURIComponent((
-  (document.location.search.split(/[?&]/)
-    .map(s => s.split('='))
-    .find(p => p[0] == 'team') || [])[1] || ''
-  ).replace('+', ' '));
-  
-if (typeof(teams) == "undefined") {
+var searchParams = new URL(document.location).searchParams;
+var teamName = searchParams.get('team');
+
+let members = searchParams.get('members');
+if (members) {
+  var teams = {};
+  team = teams[teamName || "URL"] = {};
+  members.split(' ').forEach(member => team[member] = searchParams.get(member).split(' '));
+} else if (typeof(teams) == "undefined") {
   alert("You have no teams defined. Add a teams.js but I'll show you some defaults.");
   var teams = {
     'Team': {
