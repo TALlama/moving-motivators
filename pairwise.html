@@ -40,6 +40,17 @@
         grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
       }
       
+        #history .instructions {
+          margin-top: 2rem;
+          padding-top: 1rem;
+          border-top: 1px dashed hsl(0deg 0% 90%);
+          grid-column: 1 / -1;
+          justify-self: center;
+          width: 100%;
+          text-align: center;
+          color: hsl(0deg 0% 55%);
+        }
+      
         #history > .matchup {
           padding: 1rem 2rem;
           grid-gap: 1rem;
@@ -304,6 +315,13 @@
         
         let cm = document.getElementById('current-matchup')
         cm.innerHTML = '';
+        
+        if (this.progress.value < 1) {
+          let intro = document.createElement('p');
+          intro.innerText = `This is a tool to help you evaluate which motivations drive you. For each pairing, pick the one that means more to you.`;
+          cm.append(intro);
+        }
+        
         if (v) {
           cm.append(v.el);
         } else {
@@ -362,6 +380,13 @@
             history.prepend(matchup.el);
           }
         });
+        
+        if (history.children.length > 0) {
+          let instructions = document.createElement('p');
+          instructions.classList.add('instructions');
+          instructions.append(`You can change your answers at any time by clicking below`);
+          history.prepend(instructions);
+        }
       }
       
       updateScoreboard() {
