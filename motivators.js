@@ -154,7 +154,9 @@ class MotivatorsGraph {
   drawMemberOrderLine(motivators) {
     var coords = this.order.map(m => [this.xForMotivator(m), this.yForRating(10 - motivators.indexOf(m))]);
     var directions = `M ${coords[0][0]} ${coords[0][1]} ` + coords.map(c => `S ${Math.max(0, c[0]-50)} ${c[1]}, ${c[0]} ${c[1]}`).join(' ');
-    document.querySelector('#focus-order-line').setAttribute('d', directions);
+    var line = document.querySelector('#focus-order-line');
+    line.style.fillOpacity = line.style.strokeOpacity = document.getElementById('voter-opacity')?.value || 1;
+    line.setAttribute('d', directions);
   }
   
   drawMemberIcons(member) {
@@ -273,7 +275,7 @@ class GraphElement extends ElementHandle {
 }
   
 class Dot extends GraphElement {
-  constructor(graph, motivator, rating, weight=10, opacity=1) {
+  constructor(graph, motivator, rating, weight=10, opacity=document.getElementById('dots-opacity')?.value || 1) {
     super(graph, motivator, rating);
     this.weight = weight;
     this.opacity = opacity;
@@ -366,8 +368,9 @@ if (members) {
 var graph = new MotivatorsGraph(teamName, teams[teamName] || teams[Object.keys(teams)[0]]);
 
 MotivatorsGraph.Controls = class {
-  static opacitySlider(callback) {
+  static opacitySlider(id, callback) {
     var slider = document.createElement('input');
+    slider.id = id;
     slider.setAttribute('type', 'range');
     slider.setAttribute('min', 0);
     slider.setAttribute('max', 1);
@@ -381,12 +384,12 @@ MotivatorsGraph.Controls = class {
     to = to || document.querySelector('#graph .show');
     
     to.append('Dots');
-    to.append(this.opacitySlider(
+    to.append(this.opacitySlider('dots-opacity',
       e => document.querySelectorAll('.dot').forEach(dot => dot.style.fillOpacity = dot.style.strokeOpacity = e.target.value)
     ));
 
     to.append('Voter');
-    to.append(this.opacitySlider(
+    to.append(this.opacitySlider('voter-opacity',
       e => document.querySelectorAll('.order-line').forEach(dot => dot.style.fillOpacity = dot.style.strokeOpacity = e.target.value)
     ));
   }
