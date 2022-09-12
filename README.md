@@ -7,11 +7,10 @@ By itself, it's a good exercise for one. This repository lets you make it a good
 ## How does it work?
 
 1. Pick someone to be the facilitator.
-1. Print out a copy of the Motivators.
-1. Give each person on the team the Motivator cards and have them force-rank the Motivators. They send their rankings to the facilitator and no one else.
-1. The facilitator makes a `teams.js` file and puts the rankings inside.
-1. The code makes pretty graphs.
-1. You have a discussion about what the graphs show.
+2. Have each person on the team force-rank their motivators, either by [using the pairwise page](https://tallama.github.io/moving-motivators/pairwise) or by using a copy of the cards.
+3. The facilitator makes a `teams.js` file and puts the rankings inside.
+4. The code makes pretty graphs.
+5. You have a discussion about what the graphs show.
 
 ## What should we discuss?
 
