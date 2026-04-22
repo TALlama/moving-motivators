@@ -11,6 +11,28 @@ class MotivatorsGraph {
     document.querySelectorAll('.baseline-on-member.active').forEach(e => e.classList.remove('active'));
     document.querySelectorAll('.baseline-on-member[data-member="'+member+'"]').forEach(e => e.classList.add('active'));
     document.querySelector('h1 .team-name').innerHTML = value || this.teamName;
+
+    if (value) {
+      let baseline = this.orderByMember[value];
+      let diffs = this.members.map(member => {
+        let memberOrder = this.orderByMember[member];
+        let scores = baseline.map((m, ix) => {
+          let bScore = 10 - ix;
+          let mScore = 10 - memberOrder.indexOf(m);
+          return Math.abs(bScore - mScore) ** 2;
+        });
+        let score = scores.sum();
+
+        const btn = document.querySelector(`.members button[data-member='${member}'] .difference`)
+        btn && (btn.textContent = ` (${Math.round(score)})`);
+        return [member, score];
+      }).sort((a, b) => a[1] - b[1]);
+
+      document.querySelector('.similarity').innerHTML = `Most similar: <span class='scores'>${diffs.map(d => `${d[0]} <span class='score'>(${d[1]})</span>`).join(', ')}</span>`;
+    } else {
+      document.querySelectorAll('.difference').forEach(e => e.textContent = '');
+      document.querySelector('.similarity').innerHTML = '';
+    }
   }
   
   get members() {
@@ -399,6 +421,11 @@ MotivatorsGraph.Controls = class {
     button.classList.add('focus-on-member');
     button.setAttribute('data-member', name);
     button.append(name);
+
+    var diff = document.createElement('span');
+    diff.classList.add('difference');
+    button.append(diff);
+
     button.onclick = callback || (e => graph.drawMember(name));
     return button;
   }
