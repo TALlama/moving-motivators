@@ -72,6 +72,12 @@ Did you know you were the only one who was motivated by Acceptance?
 
 Did the team know you were the only one who was motivated by Acceptance?
 
+#### What Motivators are missing?
+
+The power of this exercise is that it presents this diverse list of motiviators, which makes you think through things you might otherwise overlook. But the downside of the list is that it blinds you to what's not on it. One example is `Visibility` - your colleagues noticing the effort you put into a task and the value you created by doing it. That's on the edges of some of the existing Motivators but can stand alone.
+
+What other things motivate you that aren't on the list? Do you think they motivate a lot of people on the team, or just a few?
+
 ### Reflections
 
 #### Team fit
